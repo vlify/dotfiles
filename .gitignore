@@ -1,0 +1,7 @@
+# nvim临时文件
+*.swp
+*.bak
+*.un~
+.cache/
+.local/
+.DS_Store
