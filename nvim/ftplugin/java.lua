@@ -6,8 +6,8 @@ local config = {
   --
   -- `root_dir` must point to the root of your project.
   -- See `:help vim.fs.root`
-  root_dir = vim.fs.root(0, {'gradlew', '.git', 'mvnw','pom.xml'})
-  capabilities =require('cmp_nvim_lsp').default_capabilities(),
+  root_dir = vim.fs.root(0, {'gradlew', '.git', 'mvnw','pom.xml'}),
+  capabilities = require('cmp_nvim_lsp').default_capabilities(),
 
   settings = {
     java = {
