@@ -1,12 +1,12 @@
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
+-- /Users/ent/.config/nvim/ftplugin/java.lua
+--
 local config = {
   name = "jdtls",
   cmd = { "jdtls" },
   -- root_dir = vim.fs.root(0, { "gradlew", ".git", "mvnw", "pom.xml", "build.gradle" }),
   root_dir = vim.fn.getcwd(),
 
-  capabilities = capabilities,  
+  capabilities = require("cmp_nvim_lsp").default_capabilities(),
 
   settings = {
     java = {
