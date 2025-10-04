@@ -1,5 +1,3 @@
--- ~/.config/nvim/lua/plugin/lualine.lua
-
 require('lualine').setup {
   options = {
     icons_enabled = true,

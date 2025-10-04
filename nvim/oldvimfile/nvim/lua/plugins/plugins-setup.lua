@@ -17,6 +17,17 @@ local plugins = {
   "nvim-lualine/lualine.nvim",  -- 状态栏
   "nvim-tree/nvim-tree.lua",  -- 文档树
   "nvim-tree/nvim-web-devicons", -- 文档树图标
+  {
+    "folke/noice.nvim", -- 界面美化
+    dependencies = {"folke/snacks.nvim"},
+    opts = {
+      view = "cmdline_popup",
+    },
+    popupmenu = {
+      enable = true,
+    }
+  },
+  "goolord/alpha-nvim",
 
   "christoomey/vim-tmux-navigator", -- 用ctl-hjkl来定位窗口
   "nvim-treesitter/nvim-treesitter", -- 语法高亮
@@ -52,10 +63,6 @@ local plugins = {
     dependencies = { {'nvim-lua/plenary.nvim'} } -- requires要改为dependencies
   },
 
-  -- {
-  --   "folke/which-key.nvim", -- 快捷键查询
-  --   dependencies = {{ 'nvim-mini/mini.nvim', version = false },}
-  -- }
   {
   "folke/which-key.nvim",
   event = "VeryLazy",

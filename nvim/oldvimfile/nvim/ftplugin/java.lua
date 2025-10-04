@@ -3,16 +3,17 @@
 local root_dir = vim.fs.root(0, { "gradlew", ".git", "mvnw", "pom.xml", "build.gradle" })
 
 if root_dir == nil then
-  vim.bo.omnifunc = "v:lua.vim.lsp.omnifunc"
-  vim.notify("Java fallback mode(omnifanc only)", vim.log.levels.INFO)
+    vim.bo.omnifunc = "v:lua.vim.lsp.omnifunc"
+    vim.notify("Java fallback mode(omnifanc only)", vim.log.levels.INFO)
 else
+
   local jdtls = require("jdtls")
   local config = {
     name = "jdtls",
     cmd = { "jdtls" },
     -- root_dir = vim.fs.root(0, { "gradlew", ".git", "mvnw", "pom.xml", "build.gradle" }),
     root_dir = root_dir,
-    capabilities = require("blink.cmp").get_lsp_capabilities(),
+    capabilities = require("cmp_nvim_lsp").default_capabilities(),
 
     settings = {
       java = {
@@ -39,3 +40,4 @@ else
 
   jdtls.start_or_attach(config)
 end
+
