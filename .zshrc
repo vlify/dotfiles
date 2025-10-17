@@ -1,6 +1,7 @@
 alias ll='ls -ahlF'
 alias la='ls -A'
 alias l='ls -CF'
+alias ls='ls -CF'
 alias cs="cd ~/Semester-1"
 alias lg="lazygit"
 alias nvc='cd ~/.config/nvim'
@@ -31,3 +32,8 @@ export EDITOR=vim
     autoload -Uz compinit
     compinit
   fi
+export PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/mysql@8.4/lib"
+export CPPFLAGS="-I/usr/local/opt/mysql@8.4/include"
+export PKG_CONFIG_PATH="/usr/local/opt/mysql@8.4/lib/pkgconfig"
+export PATH="$PATH:$(go env GOPATH)/bin"
