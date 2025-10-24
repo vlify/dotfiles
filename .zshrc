@@ -14,8 +14,9 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-export http_proxy="http://127.0.0.1:10808"
-export https_proxy="http://127.0.0.1:10808"
+export HTTP_PROXY="http://127.0.0.1:10808"
+export HTTPS_PROXY="http://127.0.0.1:10808"
+export ALL_PROXY="http://127.0.0.1:10808"
 
 export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
 export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"

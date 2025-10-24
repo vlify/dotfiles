@@ -49,6 +49,12 @@ return {
       "vimdoc",
       "xml",
       "yaml",
+      "latex",
+      "norg",
+      "scss",
+      "svelte",
+      "typst",
+      "vue",
     },
   },
   ---@param opts lazyvim.TSConfig

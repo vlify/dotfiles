@@ -17,38 +17,6 @@ return {
       opts = {},
       version = not vim.g.lazyvim_blink_main and "*",
     },
-    {
-      "saghen/blink.cmp",
-      opts = {
-        sources = {
-          per_filetype = {
-            lua = { inherit_defaults = true, "lazydev" },
-          },
-          providers = {
-            lazydev = {
-              name = "LazyDev",
-              module = "lazydev.integrations.blink",
-              score_offset = 100, -- show at a higher priority than lsp
-            },
-          },
-        },
-      },
-    },
-    {
-      "saghen/blink.cmp",
-      opts = function(_, opts)
-        opts.appearance = opts.appearance or {}
-        opts.appearance.kind_icons =
-          vim.tbl_extend("force", opts.appearance.kind_icons or {}, LazyVim.config.icons.kinds)
-      end,
-    },
-    {
-      "catppuccin",
-      optional = true,
-      opts = {
-        integrations = { blink_cmp = true },
-      },
-    },
   },
   event = { "InsertEnter", "CmdlineEnter" },
 
@@ -56,9 +24,7 @@ return {
   ---@type blink.cmp.Config
   opts = {
     snippets = {
-      expand = function(snippet)
-        return LazyVim.cmp.expand(snippet)
-      end,
+      preset = "default",
     },
 
     appearance = {
@@ -100,11 +66,25 @@ return {
       -- with blink.compat
       compat = {},
       default = { "lsp", "path", "snippets", "buffer" },
+      per_filetype = {
+        lua = { inherit_defaults = true, "lazydev" },
+      },
+      providers = {
+        lazydev = {
+          name = "LazyDev",
+          module = "lazydev.integrations.blink",
+          score_offset = 100, -- show at a higher priority than lsp
+        },
+      },
     },
 
     cmdline = {
       enabled = true,
-      keymap = { preset = "cmdline" },
+      keymap = {
+        preset = "cmdline",
+        ["<Right>"] = false,
+        ["<Left>"] = false,
+      },
       completion = {
         list = { selection = { preselect = false } },
         menu = {
@@ -117,17 +97,15 @@ return {
     },
 
     keymap = {
-      preset = "default",
-      ["<Tab>"] = { "select_next", "fallback" },
-      ["<S-Tab>"] = { "select_prev", "fallback" },
-      ["<CR>"] = { "accept" },
-      ["<C-e>"] = { "hide", "show", "fallback" },
-      ["<Up>"] = { "select_prev", "fallback" },
-      ["<Down>"] = { "select_next", "fallback" },
+      preset = "enter",
+      ["<C-y>"] = { "select_and_accept" },
     },
   },
   ---@param opts blink.cmp.Config | { sources: { compat: string[] } }
   config = function(_, opts)
+    if opts.snippets and opts.snippets.preset == "default" then
+      opts.snippets.expand = LazyVim.cmp.expand
+    end
     -- setup compat sources
     local enabled = opts.sources.default
     for _, source in ipairs(opts.sources.compat or {}) do
