@@ -9,6 +9,7 @@ return {
   },
   dependencies = {
     "mfussenegger/nvim-jdtls", -- 确保 jdtls 插件作为依赖
+    "giuxtaposition/blink-cmp-copilot",
     "rafamadriz/friendly-snippets",
     -- add blink.compat to dependencies
     {
@@ -65,7 +66,7 @@ return {
       -- adding any nvim-cmp sources here will enable them
       -- with blink.compat
       compat = {},
-      default = { "lsp", "path", "snippets", "buffer" },
+      default = { "lsp", "path", "snippets", "buffer", "copilot" },
       per_filetype = {
         lua = { inherit_defaults = true, "lazydev" },
       },
@@ -74,6 +75,12 @@ return {
           name = "LazyDev",
           module = "lazydev.integrations.blink",
           score_offset = 100, -- show at a higher priority than lsp
+        },
+        copilot = {
+          name = "copilot",
+          module = "blink-cmp-copilot",
+          score_offset = 100,
+          async = true,
         },
       },
     },
