@@ -55,6 +55,7 @@ return {
       "svelte",
       "typst",
       "vue",
+      "norg",
     },
   },
   ---@param opts lazyvim.TSConfig
