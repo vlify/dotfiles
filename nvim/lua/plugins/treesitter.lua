@@ -50,7 +50,7 @@ return {
       "xml",
       "yaml",
       "latex",
-      "norg",
+      -- "norg",
       "scss",
       "svelte",
       "typst",
