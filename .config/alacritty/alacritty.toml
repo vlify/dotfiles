@@ -1,0 +1,6 @@
+[colors.primary]
+#background = "0x282c3480"
+
+[window]
+blur = true
+opacity = 0.85

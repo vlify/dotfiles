@@ -1,0 +1,49 @@
+# ===== Hermes 运行时 (日志/数据库/LSP/node_modules) =====
+.config/hermes/
+
+# ===== 浏览器配置 (cookies/会话/缓存/历史) =====
+.config/Vieb/
+.config/browsh/
+.config/.mozilla/
+.config/qutebrowser/
+.config/nyxt/
+.config/firefox/
+
+# ===== 应用缓存/数据/游戏 =====
+.config/libreoffice/
+.config/unity3d/
+.config/StardewValley/
+.config/mpv/fonts/
+.config/mpv/shaders/
+.config/mpv/scripts/
+.config/baloofileinformationrc
+.config/baloofilerc
+.config/akonadi/
+.config/akonadi_*
+.config/mihomo/
+.config/matugen/
+.config/plasma*
+.config/pulse/
+.config/trashrc
+.config/user-dirs.*
+
+# ===== 备份/数据库/日志/交换文件 =====
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.log
+*.bak
+*.backup*
+*.swp
+*.tmp
+.cache/
+.local/share/
+.local/state/
+
+# ===== 其他 =====
+.DS_Store
+core
+*.dmsbackup*
