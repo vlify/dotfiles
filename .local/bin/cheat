@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# cheat - 用 fzf 模糊搜索 Cheatsheets 速查表
+#
+# 用法:
+#   cheat              进入 fzf 界面浏览全部速查表
+#   cheat 关键字        内容搜索（如: cheat dnf / cheat synctex / cheat 重定向）
+#   cheat -l [关键字]   只输出匹配的文件路径（管道友好，不进入交互界面）
+#
+# 依赖: fzf, rg, bat, nvim
+# 环境变量: CHEAT_DIR 可覆盖速查表目录（默认 ~/Documents/Cheatsheets）
+set -euo pipefail
+
+CHEAT_DIR="${CHEAT_DIR:-$HOME/Documents/Cheatsheets}"
+query=""
+list_only=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -l|--list) list_only=true; shift ;;
+    *) query="$*"; break ;;
+  esac
+done
+
+# 有关键字 → 内容搜索;无关键字 → 列出全部
+if [[ -n "$query" ]]; then
+  files="$(rg -l -i --glob '*.md' -- "$query" "$CHEAT_DIR" 2>/dev/null || true)"
+else
+  files="$(find "$CHEAT_DIR" -maxdepth 1 -type f -name '*.md' 2>/dev/null)"
+fi
+
+if [[ -z "$files" ]]; then
+  echo "cheat: 没有找到匹配的速查表（查询: '${query:-空}'）" >&2
+  exit 1
+fi
+
+if $list_only; then
+  echo "$files"
+  exit 0
+fi
+
+# fzf 交互界面: Enter 用 nvim 打开, 预览显示文档前 120 行
+echo "$files" | fzf --prompt="cheat> " \
+  --preview 'bat --color=always --style=header,grid --line-range=:120 {}' \
+  --preview-window='right:60%,wrap' \
+  --bind 'enter:become(nvim {})' \
+  --header 'Enter=打开(nvim)  Esc=退出' || true
