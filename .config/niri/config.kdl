@@ -288,7 +288,7 @@ spawn-at-startup "swww-daemon"
 spawn-at-startup "~/.config/niri/scripts/swayidle.sh"
 spawn-at-startup "copyq & disown"
 spawn-at-startup "/usr/libexec/polkit-mate-authentication-agent-1"
-spawn-at-startup "waypaper"
+// spawn-at-startup "waypaper"
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
@@ -396,6 +396,17 @@ window-rule {
     clip-to-geometry true
     opacity 0.99
     draw-border-with-background false
+}
+
+// setting qute-dict window-rule
+window-rule {
+  match app-id="^qute-dict$"
+  open-floating true
+
+  default-column-width{ 
+  proportion 0.5 
+  
+  }
 }
 
 binds {

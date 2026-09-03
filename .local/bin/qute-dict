@@ -1,0 +1,92 @@
+#!/bin/bash
+# ==============================================================================
+# qute-dict: Qutebrowser 选词与长句即查 (kd + Alacritty 极简自适应卡片流)
+# ==============================================================================
+
+# --- 核心查词与长句翻译函数 ---
+lookup_content() {
+    local text="$1"
+    [ -z "$text" ] && return
+    
+    # 统计词数（单词/短语 vs 完整句子）
+    local wc_num
+    wc_num=$(echo "$text" | wc -w)
+    
+    # 1. 单词/短语模式：词数 <= 3 且无句子终结标点
+    if [ "$wc_num" -le 3 ] && ! echo "$text" | grep -qE '[.!?。！？]'; then
+        local clean_single
+        clean_single=$(echo "$text" | sed -E 's/^[[:punct:][:space:]]+|[[:punct:][:space:]]+$//g')
+        local dict_out
+        dict_out=$(kd "$clean_single" 2>&1)
+        if [ -n "$dict_out" ] && ! echo "$dict_out" | grep -q "Not found :("; then
+            echo "$dict_out"
+            return 0
+        fi
+    fi
+
+    # 2. 句子翻译模式：调用 kd 原生长句翻译 (-t)
+    kd -t "$text" 2>&1 | sed -E "s/& ?# ?x27;/'/g; s/&#39;/'/g; s/&quot;/\"/g; s/&amp;/&/g"
+}
+
+# --- 内部终端渲染模式 (由 Alacritty 调起) ---
+if [ "$1" = "--inner" ]; then
+    query="$2"
+    if [ -z "$query" ]; then
+        printf "\033[1;36m📖 请输入要查询的单词或句子: \033[0m"
+        read -r query
+        query=$(echo "$query" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')
+    fi
+    [ -z "$query" ] && exit 0
+
+    clear
+    content=$(lookup_content "$query")
+    lines=$(echo "$content" | wc -l)
+
+    # 绝大多数词条与句子 (<= 22行) 采用纯净静态卡片，按白名单键退出
+    if [ "$lines" -le 22 ]; then
+        printf "%s\n\n" "$content"
+        printf "\033[90m  ── 按 q / 空格 / 回车 退出 ──\033[0m"
+        while IFS= read -rsn1 key; do
+            case "$key" in
+                q|Q|" "|"")
+                    break
+                    ;;
+                *)
+                    continue
+                    ;;
+            esac
+        done
+    else
+        # 罕见超长文本才降级到分页器 (-X 禁用备用屏幕重绘，消除闪烁)
+        echo "$content" | less -R -X -q -P " [q:退出  j/k:滚动]"
+    fi
+    exit 0
+fi
+
+# --- 外部启动器模式 (由 Qutebrowser 调起) ---
+word="${QUTE_SELECTED_TEXT:-$1}"
+if [ -z "$word" ]; then
+    word=$(wl-paste --primary 2>/dev/null)
+fi
+# 清洗首尾空白
+word=$(echo "$word" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')
+
+# 动态探测内容行数，自适应窗口高度
+if [ -n "$word" ]; then
+    raw_output=$(lookup_content "$word")
+    raw_lines=$(echo "$raw_output" | wc -l)
+    win_lines=$(( raw_lines + 4 ))
+    [ "$win_lines" -lt 8 ] && win_lines=8
+    [ "$win_lines" -gt 24 ] && win_lines=24
+else
+    win_lines=10
+fi
+
+# 调起专属悬浮卡片
+exec alacritty \
+  --class qute-dict \
+  -o "window.dimensions.columns=78" \
+  -o "window.dimensions.lines=$win_lines" \
+  -o "window.padding.x=18" \
+  -o "window.padding.y=12" \
+  -e /home/ent/.local/bin/qute-dict --inner "$word"

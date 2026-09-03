@@ -6,6 +6,7 @@
 .config/browsh/
 .config/.mozilla/
 .config/qutebrowser/
+!/.config/qutebrowser/config.py
 .config/nyxt/
 .config/firefox/
 
