@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# dotfiles-bootstrap: 新机器一键初始化与冲突自愈脚本 (Bare Repo Setup)
+# ==============================================================================
+set -e
+
+DOTFILES_DIR="${HOME}/.dotfiles"
+REPO_URL="https://github.com/vlify/dotfiles.git"
+BACKUP_DIR="${HOME}/.dotfiles-backup-$(date +%Y%m%d%H%M%S)"
+
+echo "==> 🚀 开始配置 vlify 个人 Dotfiles 环境..."
+
+# 1. 如果 bare 仓库尚未克隆，执行克隆
+if [ ! -d "$DOTFILES_DIR" ]; then
+    echo "==> 📦 正在克隆 bare 仓库到 ${DOTFILES_DIR}..."
+    git clone --bare "$REPO_URL" "$DOTFILES_DIR"
+fi
+
+function dotfiles {
+    /usr/bin/git --git-dir="$DOTFILES_DIR" --work-tree="$HOME" "$@"
+}
+
+# 2. 检查并自动备份冲突的系统默认预置文件
+echo "==> 🔍 检查与解决工作树冲突..."
+if dotfiles checkout 2>&1 | grep -q "would be overwritten by checkout"; then
+    echo "==> ⚠️ 检测到已有系统预置文件冲突，正在自动备份至 ${BACKUP_DIR}..."
+    mkdir -p "$BACKUP_DIR"
+    dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | while read -r file; do
+        if [ -f "${HOME}/${file}" ] || [ -d "${HOME}/${file}" ]; then
+            mkdir -p "$(dirname "${BACKUP_DIR}/${file}")"
+            mv "${HOME}/${file}" "${BACKUP_DIR}/${file}"
+            echo "    已备份: ${file} -> ${BACKUP_DIR}/${file}"
+        fi
+    done
+fi
+
+# 3. 检出工作树并隐藏未跟踪文件
+echo "==> 📥 检出配置文件..."
+dotfiles checkout
+dotfiles config --local status.showUntrackedFiles no
+
+# 4. 建立关键运行时目录与软链
+echo "==> 🔗 建立关联目录与快捷软链..."
+mkdir -p "${HOME}/.local/share/qutebrowser/userscripts"
+if [ -f "${HOME}/.local/bin/qute-dict" ]; then
+    chmod +x "${HOME}/.local/bin/qute-dict"
+    ln -sf "${HOME}/.local/bin/qute-dict" "${HOME}/.local/share/qutebrowser/userscripts/qute-dict"
+fi
+
+# 5. 确保脚本可执行
+if [ -d "${HOME}/.local/bin" ]; then
+    chmod +x "${HOME}/.local/bin"/* 2>/dev/null || true
+fi
+
+echo ""
+echo "=================================================================="
+echo "  ✅ Dotfiles 初始化完成！"
+echo "  - Bare 仓库: ${DOTFILES_DIR}"
+echo "  - 管理命令: dotfiles status / dotfiles add <file>"
+[ -d "$BACKUP_DIR" ] && echo "  - 冲突备份目录: ${BACKUP_DIR}"
+echo "=================================================================="
